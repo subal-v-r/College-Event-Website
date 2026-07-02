@@ -19,6 +19,7 @@ export default {
           950: '#172554',
         },
         accent: {
+          300: '#c4b5fd',
           400: '#a78bfa',
           500: '#8b5cf6',
           600: '#7c3aed',

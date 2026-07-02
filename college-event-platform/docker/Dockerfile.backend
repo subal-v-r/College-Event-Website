@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install all dependencies (includes devDeps for build)
-RUN npm ci --silent
+RUN npm ci
 
 # Copy source
 COPY . .
@@ -21,8 +21,6 @@ RUN npm run build
 # ── Stage 2: Production ─────────────────────────────────────────────────────────
 FROM node:20-alpine AS runner
 
-RUN apk add --no-cache curl
-
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -32,12 +30,16 @@ COPY package*.json ./
 COPY prisma ./prisma/
 
 # Install production dependencies only
-RUN npm ci --only=production --silent && \
-    npx prisma generate && \
-    npm cache clean --force
+RUN npm ci --omit=dev
 
-# Copy compiled output from builder stage
+RUN npm cache clean --force
+
+# Copy compiled backend
 COPY --from=builder /app/dist ./dist
+
+# Copy Prisma client generated in builder stage
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
 # Create logs directory
 RUN mkdir -p logs && \
@@ -48,8 +50,5 @@ RUN mkdir -p logs && \
 USER nodejs
 
 EXPOSE 5000
-
-HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
-  CMD curl -f http://localhost:5000/health || exit 1
 
 CMD ["node", "dist/server.js"]
