@@ -32,7 +32,7 @@ export const sendError = (
   res: Response,
   message: string,
   statusCode = 400,
-  errors?: unknown
+  errors?: any
 ): Response => {
   return res.status(statusCode).json({
     success: false,
