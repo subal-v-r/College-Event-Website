@@ -1,0 +1,168 @@
+// Prisma Schema – College Technical Symposium Event Management Platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+enum EventCategory {
+  HACKATHON
+  CODING
+  PAPER_PRESENTATION
+  PROJECT_EXPO
+  WORKSHOP
+  QUIZ
+  DESIGN
+  ROBOTICS
+}
+
+enum RegistrationStatus {
+  CONFIRMED
+  CANCELLED
+  WAITLISTED
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  firstName     String
+  lastName      String
+  role          Role           @default(STUDENT)
+  department    String?
+  registerNumber String?
+  yearOfStudy   Int?
+  phone         String?
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  registrations Registration[]
+  contactForms  ContactForm[]
+
+  @@map("users")
+}
+
+model Event {
+  id                   String             @id @default(uuid())
+  title                String
+  description          String             @db.Text
+  shortDescription     String
+  category             EventCategory
+  venue                String
+  date                 DateTime
+  startTime            String
+  endTime              String
+  maxParticipants      Int
+  registrationDeadline DateTime
+  coordinatorName      String
+  coordinatorEmail     String
+  coordinatorPhone     String
+  prizeFirst           String?
+  prizeSecond          String?
+  prizeThird           String?
+  rules                String[]
+  tags                 String[]
+  isFeatured           Boolean            @default(false)
+  isActive             Boolean            @default(true)
+  imageUrl             String?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  registrations        Registration[]
+  scheduleItems        ScheduleItem[]
+
+  @@map("events")
+}
+
+model Speaker {
+  id           String   @id @default(uuid())
+  name         String
+  designation  String
+  organization String
+  bio          String   @db.Text
+  photoUrl     String?
+  sessionTitle String
+  sessionDate  DateTime
+  sessionTime  String
+  venue        String
+  isKeynote    Boolean  @default(false)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("speakers")
+}
+
+model ScheduleItem {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  date        DateTime
+  startTime   String
+  endTime     String
+  venue       String
+  day         Int
+  type        String   @default("SESSION")
+  isBreak     Boolean  @default(false)
+  event       Event?   @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  eventId     String?
+  orderIndex  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("schedule_items")
+}
+
+model Registration {
+  id             String             @id @default(uuid())
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String
+  event          Event              @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId        String
+  status         RegistrationStatus @default(CONFIRMED)
+  registerNumber String
+  department     String
+  yearOfStudy    Int
+  phone          String
+  notes          String?
+  registeredAt   DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@unique([userId, eventId])
+  @@map("registrations")
+}
+
+model Announcement {
+  id          String    @id @default(uuid())
+  title       String
+  content     String    @db.Text
+  priority    Int       @default(0)
+  isPublished Boolean   @default(true)
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("announcements")
+}
+
+model ContactForm {
+  id        String   @id @default(uuid())
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId    String?
+  name      String
+  email     String
+  subject   String
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("contact_forms")
+}

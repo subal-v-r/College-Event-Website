@@ -1,0 +1,99 @@
+version: '3.9'
+
+services:
+  # ── PostgreSQL Database ─────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: techfest_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: college_symposium
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d college_symposium"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - techfest_network
+
+  # ── Backend API ─────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../docker/Dockerfile.backend
+    container_name: techfest_backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/college_symposium
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production-min-32-chars
+      JWT_EXPIRES_IN: 7d
+      CORS_ORIGIN: http://localhost:80,http://frontend:80
+      LOG_LEVEL: info
+      APP_VERSION: "1.0.0"
+      RATE_LIMIT_WINDOW_MS: "900000"
+      RATE_LIMIT_MAX: "100"
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    volumes:
+      - backend_logs:/app/logs
+    networks:
+      - techfest_network
+
+  # ── Database Seeder (runs once) ─────────────────────────────────────────────
+  seeder:
+    build:
+      context: ./backend
+      dockerfile: ../docker/Dockerfile.backend
+    container_name: techfest_seeder
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/college_symposium
+    command: >
+      sh -c "npx prisma migrate deploy && ts-node prisma/seed.ts"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - techfest_network
+    restart: "no"
+
+  # ── Frontend ────────────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/Dockerfile.frontend
+    container_name: techfest_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - techfest_network
+
+volumes:
+  postgres_data:
+    driver: local
+  backend_logs:
+    driver: local
+
+networks:
+  techfest_network:
+    driver: bridge

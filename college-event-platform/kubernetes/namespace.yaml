@@ -1,0 +1,9 @@
+---
+# ── Namespace ──────────────────────────────────────────────────────────────────
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: techfest
+  labels:
+    app: college-event-platform
+    environment: production
