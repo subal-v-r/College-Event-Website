@@ -21,6 +21,7 @@ spec:
       containers:
         - name: postgres
           image: postgres:16-alpine
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5432
           env:
@@ -75,7 +76,7 @@ metadata:
     app: backend
     version: "1.0.0"
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: backend
@@ -92,8 +93,8 @@ spec:
     spec:
       containers:
         - name: backend
-          image: techfest/backend:latest
-          imagePullPolicy: Always
+          image: college-event-platform-backend:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5000
           envFrom:
@@ -121,7 +122,7 @@ spec:
             httpGet:
               path: /health
               port: 5000
-            initialDelaySeconds: 15
+            initialDelaySeconds: 20
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
@@ -129,16 +130,10 @@ spec:
             httpGet:
               path: /health
               port: 5000
-            initialDelaySeconds: 30
+            initialDelaySeconds: 40
             periodSeconds: 20
             timeoutSeconds: 5
             failureThreshold: 3
-          startupProbe:
-            httpGet:
-              path: /health
-              port: 5000
-            failureThreshold: 30
-            periodSeconds: 5
           volumeMounts:
             - name: backend-logs
               mountPath: /app/logs
@@ -158,7 +153,7 @@ metadata:
     app: frontend
     version: "1.0.0"
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: frontend
@@ -175,8 +170,8 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: techfest/frontend:latest
-          imagePullPolicy: Always
+          image: college-event-platform-frontend:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
           resources:
