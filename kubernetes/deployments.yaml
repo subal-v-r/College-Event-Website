@@ -93,7 +93,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: college-event-platform-backend:latest
+          image: subalvr/backend:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5000
@@ -170,7 +170,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: college-event-platform-frontend:latest
+          image: subalvr/frontend:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80

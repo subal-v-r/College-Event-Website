@@ -4,8 +4,8 @@ pipeline {
     environment {
         // Docker Hub / Container Registry
         DOCKER_REGISTRY = "docker.io"
-        DOCKER_IMAGE_BACKEND = "techfest/backend"
-        DOCKER_IMAGE_FRONTEND = "techfest/frontend"
+        DOCKER_IMAGE_BACKEND = "subalvr/backend"
+        DOCKER_IMAGE_FRONTEND = "subalvr/frontend"
         IMAGE_TAG = "${env.BUILD_NUMBER}-${env.GIT_COMMIT.take(7)}"
 
         // Kubernetes
