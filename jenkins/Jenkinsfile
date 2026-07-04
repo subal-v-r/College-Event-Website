@@ -53,9 +53,9 @@ pipeline {
             steps {
 <<<<<<< HEAD
                 echo '📚 Installing backend dependencies...'
-                dir('backend') {
-                    sh 'npm ci'
-                }
+                // dir('backend') {
+                //     sh 'npm ci'
+                // }
 =======
                 echo '📚 Skipping backend dependency installation (demo build).'
 >>>>>>> c933de2 (Temporary demo pipeline)
@@ -67,9 +67,9 @@ pipeline {
             steps {
 <<<<<<< HEAD
                 echo '📚 Installing frontend dependencies...'
-                dir('frontend') {
-                    sh 'npm ci'
-                }
+                // dir('frontend') {
+                //     sh 'npm ci'
+                // }
 =======
                 echo '📚 Skipping frontend dependency installation (demo build).'
 >>>>>>> c933de2 (Temporary demo pipeline)
