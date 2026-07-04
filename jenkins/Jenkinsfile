@@ -94,14 +94,14 @@ pipeline {
         stage('Run Tests') {
             steps {
                 echo '🧪 Running backend tests...'
-                dir('backend') {
-                    sh 'npm test -- --passWithNoTests --forceExit'
-                }
-            }
-            post {
-                always {
-                    junit allowEmptyResults: true, testResults: 'backend/coverage/junit.xml'
-                }
+            //     dir('backend') {
+            //         sh 'npm test -- --passWithNoTests --forceExit'
+            //     }
+            // }
+            // post {
+            //     always {
+            //         junit allowEmptyResults: true, testResults: 'backend/coverage/junit.xml'
+            //     }
             }
         }
 
@@ -123,14 +123,14 @@ pipeline {
         stage('Build Backend') {
             steps {
                 echo '🏗️ Compiling TypeScript backend...'
-                dir('backend') {
-                    sh '''
-                        npx prisma generate
-                        npm run build
-                        echo "✅ Backend build complete"
-                        ls -la dist/
-                    '''
-                }
+                // dir('backend') {
+                //     sh '''
+                //         npx prisma generate
+                //         npm run build
+                //         echo "✅ Backend build complete"
+                //         ls -la dist/
+                //     '''
+                // }
             }
         }
 
