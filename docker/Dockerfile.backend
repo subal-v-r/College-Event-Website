@@ -11,7 +11,9 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install all dependencies (includes devDeps for build)
-RUN npm ci
+RUN npm config set fetch-retries 5 && \
+    npm config set fetch-retry-mintimeout 20000 && \
+    npm ci
 
 # Copy source
 COPY . .
@@ -38,7 +40,9 @@ COPY package*.json ./
 COPY prisma ./prisma/
 
 # Install production dependencies only
-RUN npm ci --omit=dev
+RUN npm config set fetch-retries 5 && \
+    npm config set fetch-retry-mintimeout 20000 && \
+    npm ci --omit=dev
 
 RUN npm cache clean --force
 
