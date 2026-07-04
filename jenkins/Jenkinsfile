@@ -53,7 +53,7 @@ pipeline {
             steps {
                 echo '📚 Installing backend dependencies...'
                 dir('backend') {
-                    sh 'npm ci --silent'
+                    sh 'npm ci --loglevel verbose'
                 }
             }
         }
@@ -63,7 +63,7 @@ pipeline {
             steps {
                 echo '📚 Installing frontend dependencies...'
                 dir('frontend') {
-                    sh 'npm ci --silent'
+                    sh 'npm ci --loglevel verbose'
                 }
             }
         }
