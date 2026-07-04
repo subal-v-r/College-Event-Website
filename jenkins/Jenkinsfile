@@ -157,11 +157,11 @@ pipeline {
 
                         // Frontend image
                         sh """
-                            docker build \\
-                                -f docker/Dockerfile.frontend \\
-                                -t ${DOCKER_IMAGE_FRONTEND}:${IMAGE_TAG} \\
-                                -t ${DOCKER_IMAGE_FRONTEND}:latest \\
-                                ./frontend
+                            docker build \
+                                -f docker/Dockerfile.frontend \
+                                -t ${DOCKER_IMAGE_FRONTEND}:${IMAGE_TAG} \
+                                -t ${DOCKER_IMAGE_FRONTEND}:latest \
+                                .
                         """
 
                         echo "✅ Docker images built: ${IMAGE_TAG}"
