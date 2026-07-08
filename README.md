@@ -216,8 +216,3 @@ Full Swagger docs: `http://localhost:5000/api/docs`
 | `/admin/announcements`    | Manage announcements      |
 | `/admin/registrations`    | View all registrations    |
 
----
-
-## 📝 License
-
-MIT License – Government Engineering College, TECHFEST Dev Team
